@@ -41,7 +41,7 @@ void PIO_PWM_SetDuty(u8 Channel, u8 Num, u16 Duty);
 void PIO_PWM_SetFreq(u8 Channel, u16 Psc, u16 Arr);
 void PIO_AllDisable(void);
 void DefaultTir(u8 Type);
-void KeyQuickAct(void);
+u8 KeyQuickAct(void);
 void ShutdownTest(void);
 u8   TransStatusInfo(u16 Num);
 u8   ZC_Scale(void);

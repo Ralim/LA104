@@ -963,117 +963,112 @@ void PIO_Init(u8 Type)
 
 /*******************************************************************************
 * FunctionName : KeyQuickAct
-* Description  : T1£¬T2£¬X²¨ÂÖ¿ì½Ý²Ù×÷
+* Description  : Key shortcuts for modifying wheels when not in menus
 * Param        : void 
 *******************************************************************************/
-void KeyQuickAct(void)
+u8 KeyQuickAct(void)
 {
-  if ((READ_KEY == K3_HOLD) && (gKeyActv & ENCD_2n))
-  {
-    while (READ_KEY == K3_HOLD)
+  /*
+  * Handle holding K3 or K4 and using the up down scroll wheel
+  * This is used with K4 being an auto-repeat
+  * and K3 being used to always move X. Pos
+  */
+  if((READ_KEY == K3_HOLD))
+  {  
+    if ((gKeyActv & ENCD_1n))
     {
-      //Handle holding down K3
-      gXposiDec = 1;
-      ZC_Scale();
-      ShowWindowPrecent();
-      
-      memcpy(gLCD_Buf, gLCD_Backup, LCD_BUF_WIDTH);
-      ShowWaveToLCD();
-    }
-    Delay_mS(100);
+      gXposiDec = 1;     
+    }else if ((gKeyActv & ENCD_1p))
+    {
+      gXposiAdd = 1;     
+    } else 
+      return 1;
+    
+    ZC_Scale();
+    ShowWindowPrecent();
+    
+    memcpy(gLCD_Buf, gLCD_Backup, LCD_BUF_WIDTH);
+    ShowWaveToLCD();
     ShowTimeMarkValue();
     ShowMeasureValue();
     ResetPowerOffTime();
     gKeyActv = 0;
-  }else if ((READ_KEY == K3_HOLD) && (gKeyActv & ENCD_2p))
-  {
-    while (READ_KEY == K3_HOLD)
-    {
-      //Handle holding down K3
-      gXposiAdd = 1;
-      ZC_Scale();
-      ShowWindowPrecent();
-      
-      memcpy(gLCD_Buf, gLCD_Backup, LCD_BUF_WIDTH);
-      ShowWaveToLCD();
-    }
-    Delay_mS(100);
-    ShowTimeMarkValue();
-    ShowMeasureValue();
-    ResetPowerOffTime();
-    gKeyActv = 0;
-  } else 
-    if ((READ_KEY == K4_HOLD) && (gKeyActv & ENCD_2p))
-    {
-      while (READ_KEY == K4_HOLD)
-      {
-        if (gItemIndexNum[TIME_SET] == TB_T1)
-        {
-          if ((gItemParam[T1POSI] + gItemParamStep[T1POSI]) < gItemParam[T2POSI])
-          {
-            gItemParam[T1POSI] = gItemParam[T1POSI] + gItemParamStep[T1POSI];
-          } else
-          {
-            gItemParam[T1POSI] =  gItemParam[T2POSI];
-          }
-        } else if (gItemIndexNum[TIME_SET] == TB_T2)
-        {
-          if (gItemParam[TIMEBASE + gItemIndexNum[TIME_SET]] < gItemParamMax[TIMEBASE + gItemIndexNum[TIME_SET]])
-          {
-            gItemParam[TIMEBASE + gItemIndexNum[TIME_SET]] =
-              gItemParam[TIMEBASE + gItemIndexNum[TIME_SET]] + gItemParamStep[TIMEBASE + gItemIndexNum[TIME_SET]];
-          }
-        } else if (gItemIndexNum[TIME_SET] == TB_X)
-        {
-          gXposiAdd = 1;
-          ZC_Scale();
-          ShowWindowPrecent();
-        }
-        
-        memcpy(gLCD_Buf, gLCD_Backup, LCD_BUF_WIDTH);
-        ShowWaveToLCD();
-      }
-      Delay_mS(100);
-      ShowTimeMarkValue();
-      ShowMeasureValue();
-      ResetPowerOffTime();
-      gKeyActv = 0;
-    } else if ((READ_KEY == K4_HOLD) && (gKeyActv & ENCD_2n))
-    {
-      while (READ_KEY == K4_HOLD)
-      {
-        if (gItemIndexNum[TIME_SET] == TB_T2)
-        {
-          if ((gItemParam[T2POSI] - gItemParamStep[T2POSI]) >= gItemParam[T1POSI])
-          {
-            gItemParam[T2POSI] = gItemParam[T2POSI] - gItemParamStep[T2POSI];
-          } else
-          {
-            gItemParam[T2POSI] = gItemParam[T1POSI];
-          }
-        } else if (gItemIndexNum[TIME_SET] == TB_T1)
-        {
-          if (gItemParam[TIMEBASE + gItemIndexNum[TIME_SET]] > gItemParamMin[TIMEBASE + gItemIndexNum[TIME_SET]])
-          {
-            gItemParam[TIMEBASE + gItemIndexNum[TIME_SET]] =
-              gItemParam[TIMEBASE + gItemIndexNum[TIME_SET]] - gItemParamStep[TIMEBASE + gItemIndexNum[TIME_SET]];
-          }
-        } else if (gItemIndexNum[TIME_SET] == TB_X)
-        {
-          gXposiDec = 1;
-          ZC_Scale();
-          ShowWindowPrecent();
-        }
-        
-        memcpy(gLCD_Buf, gLCD_Backup, LCD_BUF_WIDTH);
-        ShowWaveToLCD();
-      }
-      Delay_mS(100);
-      ShowTimeMarkValue();
-      ShowMeasureValue();
-      ResetPowerOffTime();
-      gKeyActv = 0;
-    }
+    return 1;    
+  }
   
+  if ((READ_KEY == K4_HOLD) && (gKeyActv & ENCD_2p))
+  {
+    while (READ_KEY == K4_HOLD)
+    {
+      if (gItemIndexNum[TIME_SET] == TB_T1)
+      {
+        if ((gItemParam[T1POSI] + gItemParamStep[T1POSI]) < gItemParam[T2POSI])
+        {
+          gItemParam[T1POSI] = gItemParam[T1POSI] + gItemParamStep[T1POSI];
+        } else
+        {
+          gItemParam[T1POSI] =  gItemParam[T2POSI];
+        }
+      } else if (gItemIndexNum[TIME_SET] == TB_T2)
+      {
+        if (gItemParam[TIMEBASE + gItemIndexNum[TIME_SET]] < gItemParamMax[TIMEBASE + gItemIndexNum[TIME_SET]])
+        {
+          gItemParam[TIMEBASE + gItemIndexNum[TIME_SET]] =
+            gItemParam[TIMEBASE + gItemIndexNum[TIME_SET]] + gItemParamStep[TIMEBASE + gItemIndexNum[TIME_SET]];
+        }
+      } else if (gItemIndexNum[TIME_SET] == TB_X)
+      {
+        gXposiAdd = 1;
+        ZC_Scale();
+        ShowWindowPrecent();
+      }
+      
+      memcpy(gLCD_Buf, gLCD_Backup, LCD_BUF_WIDTH);
+      ShowWaveToLCD();
+    }
+    Delay_mS(100);
+    ShowTimeMarkValue();
+    ShowMeasureValue();
+    ResetPowerOffTime();
+    gKeyActv = 0;
+    return 1;
+  } else if ((READ_KEY == K4_HOLD) && (gKeyActv & ENCD_2n))
+  {
+    while (READ_KEY == K4_HOLD)
+    {
+      if (gItemIndexNum[TIME_SET] == TB_T2)
+      {
+        if ((gItemParam[T2POSI] - gItemParamStep[T2POSI]) >= gItemParam[T1POSI])
+        {
+          gItemParam[T2POSI] = gItemParam[T2POSI] - gItemParamStep[T2POSI];
+        } else
+        {
+          gItemParam[T2POSI] = gItemParam[T1POSI];
+        }
+      } else if (gItemIndexNum[TIME_SET] == TB_T1)
+      {
+        if (gItemParam[TIMEBASE + gItemIndexNum[TIME_SET]] > gItemParamMin[TIMEBASE + gItemIndexNum[TIME_SET]])
+        {
+          gItemParam[TIMEBASE + gItemIndexNum[TIME_SET]] =
+            gItemParam[TIMEBASE + gItemIndexNum[TIME_SET]] - gItemParamStep[TIMEBASE + gItemIndexNum[TIME_SET]];
+        }
+      } else if (gItemIndexNum[TIME_SET] == TB_X)
+      {
+        gXposiDec = 1;
+        ZC_Scale();
+        ShowWindowPrecent();
+      }
+      
+      memcpy(gLCD_Buf, gLCD_Backup, LCD_BUF_WIDTH);
+      ShowWaveToLCD();
+    }
+    Delay_mS(100);
+    ShowTimeMarkValue();
+    ShowMeasureValue();
+    ResetPowerOffTime();
+    gKeyActv = 0;
+    return 1;
+  }
+  return 0;
 }
 

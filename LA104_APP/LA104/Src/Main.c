@@ -41,323 +41,317 @@ void main(void)
   {
     ShutdownTest();                          // 软关机测试
     ShortcutBMP();                           // K1和K4快捷截图
-    if(Menu.flag)KeyQuickAct();              // T1，T2，水平位移快捷操作
-    
-    if(gKeyActv)
-    {
-      switch(gKeyActv)
+    u8 skip =0;
+  // If we are on the main menu bar
+  // Call the code to handle the ALT functions of the wheels on 
+    if(Menu.flag)
+      skip=KeyQuickAct();              // T1，T2，水平位移快捷操作
+    if(skip==0)
+      if(gKeyActv)
       {
-      case K1_ACTp:
-        gKeyActv = 0;
+        switch(gKeyActv)
         {
-          Menu.flag = 1;
-          Item.flag = 0;
-          SubItem.flag = 0;
-          Process();
-          ShowSmplStatus(STOP);
-          if(gBeepFlag)
+        case K1_ACTp:
+          gKeyActv = 0;
           {
-            gBeepFlag = 0;
-            Beep_mS(50);
-          }
-        }
-        break;
-        
-      case K2_ACTp:
-        if(Menu.flag)
-        {
-          ShowPopItem(Menu.index);
-          Menu.flag = 0;
-          Item.flag = 1;
-        }
-        else if(Item.flag)
-        {
-          if(Menu.index == IN_TYPE)
-          {
-            if(gItemParam[INTYPE]!=IN_USER)
+            Menu.flag = 1;
+            Item.flag = 0;
+            SubItem.flag = 0;
+            Process();
+            ShowSmplStatus(STOP);
+            if(gBeepFlag)
             {
-              ShowSubItem(Menu.index, gItemIndexNum[Menu.index]);
-              Item.flag = 0;
-              SubItem.flag = 1;
+              gBeepFlag = 0;
+              Beep_mS(50);
             }
           }
-          else if(Menu.index == OUT_TYPE)
+          break;
+          
+        case K2_ACTp:
+          if(Menu.flag)
           {
-            if(gItemParam[OUTTYPE]==OUT_PWM)
+            ShowPopItem(Menu.index);
+            Menu.flag = 0;
+            Item.flag = 1;
+          }
+          else if(Item.flag)
+          {
+            if(Menu.index == IN_TYPE)
             {
-              ShowSubItem(Menu.index, gItemIndexNum[Menu.index]);
-              Item.flag = 0;
-              SubItem.flag = 1;
+              if(gItemParam[INTYPE]!=IN_USER)
+              {
+                ShowSubItem(Menu.index, gItemIndexNum[Menu.index]);
+                Item.flag = 0;
+                SubItem.flag = 1;
+              }
+            }
+            else if(Menu.index == OUT_TYPE)
+            {
+              if(gItemParam[OUTTYPE]==OUT_PWM)
+              {
+                ShowSubItem(Menu.index, gItemIndexNum[Menu.index]);
+                Item.flag = 0;
+                SubItem.flag = 1;
+              }
             }
           }
-        }
-        break;
-        
-      case K3_ACTp: // ESC Button
-        
-        if(Item.flag)
-        {
-          if(Menu.index == TIME_SET)gRunFlag = 1; // TimeSet 退出时刷新波形
-          Menu.flag = 1;
-          Item.flag = 0;
-          M_Flag = 1;
-        }
-        else if(SubItem.flag)
-        {
-          AnalyzeFrame(gItemParam[INTYPE]);       // 协议子菜单退出时刷新解析
-          memcpy(gLCD_Buf, gLCD_Backup, LCD_BUF_WIDTH);
-          ShowWaveToLCD();
-          Menu.flag = 1;
-          ShowPopItem(Menu.index);
-          SubItem.flag = 0;
-          Item.flag = 1;
-          Menu.flag = 0;
-        }
-        else
-        {
-          Menu.flag = 1;
-          Item.flag = 0;
-          M_Flag = 1;
-        }
-        break;
-        
-      case K4_ACTp: // OK Button
-        if(Item.flag)
-        {
-          if(Menu.index == TRIGGER)
+          break;
+          
+        case K3_ACTp: // ESC Button
+          
+          if(Item.flag)
           {
-            // TriCond子菜单
-            if((gItemIndexNum[TRIGGER] == 1) && ((gItemParam[TRICOND] & 0x00FF) != 0) && ((gItemParam[TRICOND] & 0x00FF) != 5))
-            {
-              if((gItemParam[TRICOND] >> (8 + (gItemParam[TRICOND] & 0x00FF) - 1)) & 0x01)
-                // 置0
-                gItemParam[TRICOND] = gItemParam[TRICOND] & (~(0x01 << (8 + (gItemParam[TRICOND] & 0x00FF) - 1)));
-              else
-                // 置1
-                gItemParam[TRICOND] = gItemParam[TRICOND] | (0x01 << (8 + (gItemParam[TRICOND] & 0x00FF) - 1));
-            }
-            // TriMask子菜单
-            else if((gItemIndexNum[TRIGGER] == 2) && ((gItemParam[TRIMASK] & 0x00FF) != 0) && ((gItemParam[TRIMASK] & 0x00FF) != 5))
-            {
-              if((gItemParam[TRIMASK] >> (8 + (gItemParam[TRIMASK] & 0x00FF) - 1)) & 0x01)
-                // 置0
-                gItemParam[TRIMASK] = gItemParam[TRIMASK] & (~(0x01 << (8 + (gItemParam[TRIMASK] & 0x00FF) - 1)));
-              else
-                // 置1
-                gItemParam[TRIMASK] = gItemParam[TRIMASK] | (0x01 << (8 + (gItemParam[TRIMASK] & 0x00FF) - 1));
-            }
+            if(Menu.index == TIME_SET)gRunFlag = 1; // TimeSet 退出时刷新波形
+            Menu.flag = 1;
+            Item.flag = 0;
+            M_Flag = 1;
           }
-          else if(Menu.index == OUT_TYPE)
+          else if(SubItem.flag)
           {
-            PIO_SendData(gItemParam[OUTTYPE]);
+            AnalyzeFrame(gItemParam[INTYPE]);       // 协议子菜单退出时刷新解析
+            memcpy(gLCD_Buf, gLCD_Backup, LCD_BUF_WIDTH);
+            ShowWaveToLCD();
+            Menu.flag = 1;
+            ShowPopItem(Menu.index);
+            SubItem.flag = 0;
+            Item.flag = 1;
+            Menu.flag = 0;
           }
-          else if(Menu.index == FILE_CTRL)
+          else
           {
-            if(gItemIndexNum[FILE_CTRL] == BMP)
-            {
-              Clear_File_ICO(SAVE_ICO_X0, SAVE_ICO_Y0);
-              File_ST = Save_Bmp(gItemParam[SAVEBMP]);
-            }
-            else if(gItemIndexNum[FILE_CTRL] == CSV)
-            {
-              Clear_File_ICO(SAVE_ICO_X0, SAVE_ICO_Y0);
-              File_ST = Save_Csv(gItemParam[SAVECSV]);
-            }
-            DispFileInfo(File_ST);
-            gBatFlag = 1;
-            ShowBattery();
+            Menu.flag = 1;
+            Item.flag = 0;
+            M_Flag = 1;
           }
-          else if(Menu.index == SETTING)
+          break;
+          
+        case K4_ACTp: // OK Button
+          if(Item.flag)
           {
-            if(gItemIndexNum[SETTING] == SAVEPARAM)
+            if(Menu.index == TRIGGER)
             {
-              File_ST = SaveParameter();
+              // TriCond子菜单
+              if((gItemIndexNum[TRIGGER] == 1) && ((gItemParam[TRICOND] & 0x00FF) != 0) && ((gItemParam[TRICOND] & 0x00FF) != 5))
+              {
+                if((gItemParam[TRICOND] >> (8 + (gItemParam[TRICOND] & 0x00FF) - 1)) & 0x01)
+                  // 置0
+                  gItemParam[TRICOND] = gItemParam[TRICOND] & (~(0x01 << (8 + (gItemParam[TRICOND] & 0x00FF) - 1)));
+                else
+                  // 置1
+                  gItemParam[TRICOND] = gItemParam[TRICOND] | (0x01 << (8 + (gItemParam[TRICOND] & 0x00FF) - 1));
+              }
+              // TriMask子菜单
+              else if((gItemIndexNum[TRIGGER] == 2) && ((gItemParam[TRIMASK] & 0x00FF) != 0) && ((gItemParam[TRIMASK] & 0x00FF) != 5))
+              {
+                if((gItemParam[TRIMASK] >> (8 + (gItemParam[TRIMASK] & 0x00FF) - 1)) & 0x01)
+                  // 置0
+                  gItemParam[TRIMASK] = gItemParam[TRIMASK] & (~(0x01 << (8 + (gItemParam[TRIMASK] & 0x00FF) - 1)));
+                else
+                  // 置1
+                  gItemParam[TRIMASK] = gItemParam[TRIMASK] | (0x01 << (8 + (gItemParam[TRIMASK] & 0x00FF) - 1));
+              }
             }
-            else if(gItemIndexNum[SETTING] == RSTPARAM)
+            else if(Menu.index == OUT_TYPE)
             {
-              M_Flag = 1;
-              RestoreParameter();
-              File_ST = SaveParameter();
-              gBatFlag = 1;
-              ShowAllMenu();
+              PIO_SendData(gItemParam[OUTTYPE]);
             }
-            if(gItemIndexNum[SETTING]<=RSTPARAM)
+            else if(Menu.index == FILE_CTRL)
             {
+              if(gItemIndexNum[FILE_CTRL] == BMP)
+              {
+                Clear_File_ICO(SAVE_ICO_X0, SAVE_ICO_Y0);
+                File_ST = Save_Bmp(gItemParam[SAVEBMP]);
+              }
+              else if(gItemIndexNum[FILE_CTRL] == CSV)
+              {
+                Clear_File_ICO(SAVE_ICO_X0, SAVE_ICO_Y0);
+                File_ST = Save_Csv(gItemParam[SAVECSV]);
+              }
               DispFileInfo(File_ST);
               gBatFlag = 1;
               ShowBattery();
-            }  
-          }
-        }
-        else if(Menu.flag)                // 主菜单时，时间选项切换
-        {
-          if(gItemIndexNum[TIME_SET] < gItemMaxNum[TIME_SET])
-          {
-            gItemIndexNum[TIME_SET]++;
-          }
-          else
-          {
-            gItemIndexNum[TIME_SET] = 0;
-          }
-        }
-        break;
-      case ENCD_2p: // Up on the B wheel
-        if(Menu.flag) // If on the menu bar
-        {          
-          //Modify the last item selected on the time menu
-          //But also dont let T1 exceed T2
-          if(gItemIndexNum[TIME_SET] != TB_T1 || ((gItemParam[T1POSI] + gItemParamStep[T1POSI]) < gItemParam[T2POSI])){
-            
-            if(gItemParam[TIMEBASE + gItemIndexNum[TIME_SET]] < gItemParamMax[TIMEBASE + gItemIndexNum[TIME_SET]])
+            }
+            else if(Menu.index == SETTING)
             {
-              gItemParam[TIMEBASE + gItemIndexNum[TIME_SET]] =
-                gItemParam[TIMEBASE + gItemIndexNum[TIME_SET]] + gItemParamStep[TIMEBASE + gItemIndexNum[TIME_SET]];
+              if(gItemIndexNum[SETTING] == SAVEPARAM)
+              {
+                File_ST = SaveParameter();
+              }
+              else if(gItemIndexNum[SETTING] == RSTPARAM)
+              {
+                M_Flag = 1;
+                RestoreParameter();
+                File_ST = SaveParameter();
+                gBatFlag = 1;
+                ShowAllMenu();
+              }
+              if(gItemIndexNum[SETTING]<=RSTPARAM)
+              {
+                DispFileInfo(File_ST);
+                gBatFlag = 1;
+                ShowBattery();
+              }  
             }
           }
-          else {
-            //T1 is limited
-            gItemParam[T1POSI] =  gItemParam[T2POSI];
-          }
-          
-          
-          if(gItemIndexNum[TIME_SET] == TB_TB)
+          else if(Menu.flag)                // 主菜单时，时间选项切换
           {
-            ZC_Scale();
-          }
-          else if(gItemIndexNum[TIME_SET] == TB_ZC) 
-          {
-            gTimeBase = gItemParam[TIMEBASE];
-            memcpy(gLCD_Buf, gLCD_Backup, LCD_BUF_WIDTH);
-            ShowWaveToLCD();
-          }
-          else if(gItemIndexNum[TIME_SET] == TB_X) 
-          {
-            gXposiAdd = 1;
-            ZC_Scale();
-          }
-          else
-          {
-            memcpy(gLCD_Buf, gLCD_Backup, LCD_BUF_WIDTH);
-            ShowWaveToLCD();
-          }
-        }
-        else if(Item.flag)                  
-        {
-          if(gItemIndexNum[Menu.index] > 0)
-          {
-            gItemIndexNum[Menu.index]--;
-          }
-        }
-        else if(SubItem.flag)         
-        {
-          switch(Menu.index)
-          {
-          case IN_TYPE:
-            if(INPUT_SUB_INDEX_NUM > 0)
+            if(gItemIndexNum[TIME_SET] < gItemMaxNum[TIME_SET])
             {
-              INPUT_SUB_INDEX_NUM--;
-            }
-            break;
-          case OUT_TYPE:
-            if(OUT_SUB_INDEX_NUM > 0)
-            {
-              OUT_SUB_INDEX_NUM--;
-            }
-            break;
-          }  
-        }
-        
-        break;
-      case ENCD_2n: // Down on thr right scroll wheel
-        if(Menu.flag) // If on the menu bar srolls
-        {
-          
-          //Otherise s we are not in a menu, change the last selected item from the time menu
-          //But only if its above the minimum
-          if(gItemIndexNum[TIME_SET] != TB_T2 || ((gItemParam[T2POSI] - gItemParamStep[T2POSI]) >= gItemParam[T1POSI])) {
-            if(gItemParam[TIMEBASE + gItemIndexNum[TIME_SET]] > gItemParamMin[TIMEBASE + gItemIndexNum[TIME_SET]])                           {
-              gItemParam[TIMEBASE + gItemIndexNum[TIME_SET]] =
-                gItemParam[TIMEBASE + gItemIndexNum[TIME_SET]] - gItemParamStep[TIMEBASE + gItemIndexNum[TIME_SET]];
-            }
-          }
-          else {
-            //Do not let T2 < T1
-            gItemParam[T2POSI] = gItemParam[T1POSI];
-          }                    
-          
-          if(gItemIndexNum[TIME_SET] == TB_TB)
-          {
-            ZC_Scale(); // redraw with new Z scale as sampling time has changed
-          }
-          else if(gItemIndexNum[TIME_SET] == TB_ZC) 
-          {
-            gTimeBase = gItemParam[TIMEBASE];
-            memcpy(gLCD_Buf, gLCD_Backup, LCD_BUF_WIDTH);
-            ShowWaveToLCD();
-          }
-          else if(gItemIndexNum[TIME_SET] == TB_X) 
-          {
-            gXposiDec = 1;
-            ZC_Scale();
-          }
-          else
-          {
-            memcpy(gLCD_Buf, gLCD_Backup, LCD_BUF_WIDTH);
-            ShowWaveToLCD();
-          }
-        }
-        else if(Item.flag) // If in a menu, move up and down the list [UP]
-        {
-          if(gItemIndexNum[Menu.index] < gItemMaxNum[Menu.index])
-          {
-            gItemIndexNum[Menu.index]++;
-          }
-        }
-        else if(SubItem.flag)    //   
-        {
-          switch(Menu.index)
-          {
-          case IN_TYPE:
-            if(INPUT_SUB_INDEX_NUM < INPUT_SUB_MAX_NUM)
-            {
-              INPUT_SUB_INDEX_NUM++;
-            }
-            break;
-          case OUT_TYPE:
-            if(OUT_SUB_INDEX_NUM < OUT_SUB_MAX_NUM)
-            {
-              OUT_SUB_INDEX_NUM++;
-            }
-            break;
-          }
-        }
-        
-        break;
-        
-      case ENCD_1n: // Left
-        if(Menu.flag)
-        {
-          if(Menu.index > 0) Menu.index--;
-        }
-        else if(Item.flag)
-        {
-          if((Menu.index == TIME_SET) && (gItemIndexNum[TIME_SET] == TB_X))
-          {
-            gXposiDec = 1;
-            UpdateXposiTime();
-            ShowScaleRuleTime(RULE_X, RULE_Y, SHOW_WIDTH, gItemParam[TIMEBASE]);
-          }
-          else if((Menu.index == TIME_SET) && (gItemIndexNum[TIME_SET] == TB_T1))
-          {
-            if((gItemParam[I_INDEX] - gItemParamStep[I_INDEX]) >= gItemParamMin[I_INDEX])
-            {
-              gItemParam[I_INDEX] = gItemParam[I_INDEX] - gItemParamStep[I_INDEX];
+              gItemIndexNum[TIME_SET]++;
             }
             else
             {
-              gItemParam[I_INDEX] = gItemParamMin[I_INDEX];
+              gItemIndexNum[TIME_SET] = 0;
             }
-            while(READ_KEY == K4_HOLD)
+          }
+          break;
+        case ENCD_2p: // Up on the B wheel
+          if(Menu.flag) // If on the menu bar
+          {          
+            //Modify the last item selected on the time menu
+            //But also dont let T1 exceed T2
+            if(gItemIndexNum[TIME_SET] != TB_T1 || ((gItemParam[T1POSI] + gItemParamStep[T1POSI]) < gItemParam[T2POSI])){
+              
+              if(gItemParam[TIMEBASE + gItemIndexNum[TIME_SET]] < gItemParamMax[TIMEBASE + gItemIndexNum[TIME_SET]])
+              {
+                gItemParam[TIMEBASE + gItemIndexNum[TIME_SET]] =
+                  gItemParam[TIMEBASE + gItemIndexNum[TIME_SET]] + gItemParamStep[TIMEBASE + gItemIndexNum[TIME_SET]];
+              }
+            }
+            else {
+              //T1 is limited
+              gItemParam[T1POSI] =  gItemParam[T2POSI];
+            }
+            
+            
+            if(gItemIndexNum[TIME_SET] == TB_TB)
+            {
+              ZC_Scale();
+            }
+            else if(gItemIndexNum[TIME_SET] == TB_ZC) 
+            {
+              gTimeBase = gItemParam[TIMEBASE];
+              memcpy(gLCD_Buf, gLCD_Backup, LCD_BUF_WIDTH);
+              ShowWaveToLCD();
+            }
+            else if(gItemIndexNum[TIME_SET] == TB_X) 
+            {
+              gXposiAdd = 1;
+              ZC_Scale();
+            }
+            else
+            {
+              memcpy(gLCD_Buf, gLCD_Backup, LCD_BUF_WIDTH);
+              ShowWaveToLCD();
+            }
+          }
+          else if(Item.flag)                  
+          {
+            if(gItemIndexNum[Menu.index] > 0)
+            {
+              gItemIndexNum[Menu.index]--;
+            }
+          }
+          else if(SubItem.flag)         
+          {
+            switch(Menu.index)
+            {
+            case IN_TYPE:
+              if(INPUT_SUB_INDEX_NUM > 0)
+              {
+                INPUT_SUB_INDEX_NUM--;
+              }
+              break;
+            case OUT_TYPE:
+              if(OUT_SUB_INDEX_NUM > 0)
+              {
+                OUT_SUB_INDEX_NUM--;
+              }
+              break;
+            }  
+          }
+          
+          break;
+        case ENCD_2n: // Down on thr right scroll wheel
+          if(Menu.flag) // If on the menu bar srolls
+          {
+            
+            //Otherise s we are not in a menu, change the last selected item from the time menu
+            //But only if its above the minimum
+            if(gItemIndexNum[TIME_SET] != TB_T2 || ((gItemParam[T2POSI] - gItemParamStep[T2POSI]) >= gItemParam[T1POSI])) {
+              if(gItemParam[TIMEBASE + gItemIndexNum[TIME_SET]] > gItemParamMin[TIMEBASE + gItemIndexNum[TIME_SET]])                           {
+                gItemParam[TIMEBASE + gItemIndexNum[TIME_SET]] =
+                  gItemParam[TIMEBASE + gItemIndexNum[TIME_SET]] - gItemParamStep[TIMEBASE + gItemIndexNum[TIME_SET]];
+              }
+            }
+            else {
+              //Do not let T2 < T1
+              gItemParam[T2POSI] = gItemParam[T1POSI];
+            }                    
+            
+            if(gItemIndexNum[TIME_SET] == TB_TB)
+            {
+              ZC_Scale(); // redraw with new Z scale as sampling time has changed
+            }
+            else if(gItemIndexNum[TIME_SET] == TB_ZC) 
+            {
+              gTimeBase = gItemParam[TIMEBASE];
+              memcpy(gLCD_Buf, gLCD_Backup, LCD_BUF_WIDTH);
+              ShowWaveToLCD();
+            }
+            else if(gItemIndexNum[TIME_SET] == TB_X) 
+            {
+              gXposiDec = 1;
+              ZC_Scale();
+            }
+            else
+            {
+              memcpy(gLCD_Buf, gLCD_Backup, LCD_BUF_WIDTH);
+              ShowWaveToLCD();
+            }
+          }
+          else if(Item.flag) // If in a menu, move up and down the list [UP]
+          {
+            if(gItemIndexNum[Menu.index] < gItemMaxNum[Menu.index])
+            {
+              gItemIndexNum[Menu.index]++;
+            }
+          }
+          else if(SubItem.flag)    //   
+          {
+            switch(Menu.index)
+            {
+            case IN_TYPE:
+              if(INPUT_SUB_INDEX_NUM < INPUT_SUB_MAX_NUM)
+              {
+                INPUT_SUB_INDEX_NUM++;
+              }
+              break;
+            case OUT_TYPE:
+              if(OUT_SUB_INDEX_NUM < OUT_SUB_MAX_NUM)
+              {
+                OUT_SUB_INDEX_NUM++;
+              }
+              break;
+            }
+          }
+          
+          break;
+          
+        case ENCD_1n: // Left
+          if(Menu.flag)
+          {
+            if(Menu.index > 0) Menu.index--;
+          }
+          else if(Item.flag)
+          {
+            if((Menu.index == TIME_SET) && (gItemIndexNum[TIME_SET] == TB_X))
+            {
+              gXposiDec = 1;
+              UpdateXposiTime();
+              ShowScaleRuleTime(RULE_X, RULE_Y, SHOW_WIDTH, gItemParam[TIMEBASE]);
+            }
+            else if((Menu.index == TIME_SET) && (gItemIndexNum[TIME_SET] == TB_T1))
             {
               if((gItemParam[I_INDEX] - gItemParamStep[I_INDEX]) >= gItemParamMin[I_INDEX])
               {
@@ -367,20 +361,20 @@ void main(void)
               {
                 gItemParam[I_INDEX] = gItemParamMin[I_INDEX];
               }
-              ShowPopItem(Menu.index);
+              while(READ_KEY == K4_HOLD)
+              {
+                if((gItemParam[I_INDEX] - gItemParamStep[I_INDEX]) >= gItemParamMin[I_INDEX])
+                {
+                  gItemParam[I_INDEX] = gItemParam[I_INDEX] - gItemParamStep[I_INDEX];
+                }
+                else
+                {
+                  gItemParam[I_INDEX] = gItemParamMin[I_INDEX];
+                }
+                ShowPopItem(Menu.index);
+              }
             }
-          }
-          else if((Menu.index == TIME_SET) && (gItemIndexNum[TIME_SET] == TB_T2))
-          {
-            if((gItemParam[I_INDEX] - gItemParamStep[I_INDEX]) >= gItemParam[T1POSI])
-            {
-              gItemParam[I_INDEX] = gItemParam[I_INDEX] - gItemParamStep[I_INDEX];
-            }
-            else
-            {
-              gItemParam[I_INDEX] = gItemParam[T1POSI];
-            }
-            while(READ_KEY == K4_HOLD)
+            else if((Menu.index == TIME_SET) && (gItemIndexNum[TIME_SET] == TB_T2))
             {
               if((gItemParam[I_INDEX] - gItemParamStep[I_INDEX]) >= gItemParam[T1POSI])
               {
@@ -390,74 +384,74 @@ void main(void)
               {
                 gItemParam[I_INDEX] = gItemParam[T1POSI];
               }
-              ShowPopItem(Menu.index);
+              while(READ_KEY == K4_HOLD)
+              {
+                if((gItemParam[I_INDEX] - gItemParamStep[I_INDEX]) >= gItemParam[T1POSI])
+                {
+                  gItemParam[I_INDEX] = gItemParam[I_INDEX] - gItemParamStep[I_INDEX];
+                }
+                else
+                {
+                  gItemParam[I_INDEX] = gItemParam[T1POSI];
+                }
+                ShowPopItem(Menu.index);
+              }
             }
-          }
-          else if((Menu.index == TRIGGER) && ((gItemIndexNum[TRIGGER] == 1) || (gItemIndexNum[TRIGGER] == 2)))
-          {
-            if((gItemParam[I_INDEX] & 0x00FF) > gItemParamMin[I_INDEX])
+            else if((Menu.index == TRIGGER) && ((gItemIndexNum[TRIGGER] == 1) || (gItemIndexNum[TRIGGER] == 2)))
             {
-              gItemParam[I_INDEX] = gItemParam[I_INDEX] - gItemParamStep[I_INDEX];
-            }
-          }
-          else
-          {
-            if((gItemParam[I_INDEX] - gItemParamStep[I_INDEX]) >= gItemParamMin[I_INDEX])
-            {
-              gItemParam[I_INDEX] = gItemParam[I_INDEX] - gItemParamStep[I_INDEX];
+              if((gItemParam[I_INDEX] & 0x00FF) > gItemParamMin[I_INDEX])
+              {
+                gItemParam[I_INDEX] = gItemParam[I_INDEX] - gItemParamStep[I_INDEX];
+              }
             }
             else
             {
-              gItemParam[I_INDEX] = gItemParamMin[I_INDEX];
+              if((gItemParam[I_INDEX] - gItemParamStep[I_INDEX]) >= gItemParamMin[I_INDEX])
+              {
+                gItemParam[I_INDEX] = gItemParam[I_INDEX] - gItemParamStep[I_INDEX];
+              }
+              else
+              {
+                gItemParam[I_INDEX] = gItemParamMin[I_INDEX];
+              }
+            }
+            
+            if(Menu.index == OUT_TYPE) PIO_Init(gItemParam[OUTTYPE]);
+            if(Menu.index == IN_TYPE) DefaultTir(gItemParam[INTYPE]);
+          }
+          else if(SubItem.flag)                
+          {
+            if((Menu.index == IN_TYPE) && (gItemIndexNum[IN_TYPE] == 0))
+            {
+              if(INPUT_SUB_PARAM > INPUT_SUB_PARAM_MIN)
+              {
+                INPUT_SUB_PARAM--;
+              }
+            }
+            else if(Menu.index == OUT_TYPE)
+            {
+              if(OUT_SUB_PARAM > OUT_SUB_PARAM_MIN)
+              {
+                OUT_SUB_PARAM--;
+              }
             }
           }
           
-          if(Menu.index == OUT_TYPE) PIO_Init(gItemParam[OUTTYPE]);
-          if(Menu.index == IN_TYPE) DefaultTir(gItemParam[INTYPE]);
-        }
-        else if(SubItem.flag)                
-        {
-          if((Menu.index == IN_TYPE) && (gItemIndexNum[IN_TYPE] == 0))
+          break;
+        case ENCD_1p: // Right
+          if(Menu.flag)
           {
-            if(INPUT_SUB_PARAM > INPUT_SUB_PARAM_MIN)
-            {
-              INPUT_SUB_PARAM--;
-            }
+            if(Menu.index < Menu.total) Menu.index++;
           }
-          else if(Menu.index == OUT_TYPE)
+          else if(Item.flag)
           {
-            if(OUT_SUB_PARAM > OUT_SUB_PARAM_MIN)
+            if((Menu.index == TIME_SET) && (gItemIndexNum[TIME_SET] == TB_X))
             {
-              OUT_SUB_PARAM--;
+              gXposiAdd = 1;
+              UpdateXposiTime();
+              ShowScaleRuleTime(RULE_X, RULE_Y, SHOW_WIDTH, gItemParam[TIMEBASE]);
             }
-          }
-        }
-        
-        break;
-      case ENCD_1p: // Right
-        if(Menu.flag)
-        {
-          if(Menu.index < Menu.total) Menu.index++;
-        }
-        else if(Item.flag)
-        {
-          if((Menu.index == TIME_SET) && (gItemIndexNum[TIME_SET] == TB_X))
-          {
-            gXposiAdd = 1;
-            UpdateXposiTime();
-            ShowScaleRuleTime(RULE_X, RULE_Y, SHOW_WIDTH, gItemParam[TIMEBASE]);
-          }
-          else if((Menu.index == TIME_SET) && (gItemIndexNum[TIME_SET] == TB_T1))
-          {
-            if((gItemParam[I_INDEX] + gItemParamStep[I_INDEX]) < gItemParam[T2POSI])
-            {
-              gItemParam[I_INDEX] = gItemParam[I_INDEX] + gItemParamStep[I_INDEX];
-            }
-            else
-            {
-              gItemParam[I_INDEX] =  gItemParam[T2POSI];
-            }
-            while(READ_KEY == K4_HOLD)
+            else if((Menu.index == TIME_SET) && (gItemIndexNum[TIME_SET] == TB_T1))
             {
               if((gItemParam[I_INDEX] + gItemParamStep[I_INDEX]) < gItemParam[T2POSI])
               {
@@ -467,20 +461,20 @@ void main(void)
               {
                 gItemParam[I_INDEX] =  gItemParam[T2POSI];
               }
-              ShowPopItem(Menu.index);
+              while(READ_KEY == K4_HOLD)
+              {
+                if((gItemParam[I_INDEX] + gItemParamStep[I_INDEX]) < gItemParam[T2POSI])
+                {
+                  gItemParam[I_INDEX] = gItemParam[I_INDEX] + gItemParamStep[I_INDEX];
+                }
+                else
+                {
+                  gItemParam[I_INDEX] =  gItemParam[T2POSI];
+                }
+                ShowPopItem(Menu.index);
+              }
             }
-          }
-          else if((Menu.index == TIME_SET) && (gItemIndexNum[TIME_SET] == TB_T2))
-          {
-            if((gItemParam[I_INDEX] + gItemParamStep[I_INDEX]) < gItemParamMax[I_INDEX])
-            {
-              gItemParam[I_INDEX] = gItemParam[I_INDEX] + gItemParamStep[I_INDEX];
-            }
-            else
-            {
-              gItemParam[I_INDEX] =  gItemParamMax[I_INDEX];
-            }
-            while(READ_KEY == K4_HOLD)
+            else if((Menu.index == TIME_SET) && (gItemIndexNum[TIME_SET] == TB_T2))
             {
               if((gItemParam[I_INDEX] + gItemParamStep[I_INDEX]) < gItemParamMax[I_INDEX])
               {
@@ -490,66 +484,76 @@ void main(void)
               {
                 gItemParam[I_INDEX] =  gItemParamMax[I_INDEX];
               }
-              ShowPopItem(Menu.index);
+              while(READ_KEY == K4_HOLD)
+              {
+                if((gItemParam[I_INDEX] + gItemParamStep[I_INDEX]) < gItemParamMax[I_INDEX])
+                {
+                  gItemParam[I_INDEX] = gItemParam[I_INDEX] + gItemParamStep[I_INDEX];
+                }
+                else
+                {
+                  gItemParam[I_INDEX] =  gItemParamMax[I_INDEX];
+                }
+                ShowPopItem(Menu.index);
+              }
             }
-          }
-          else if((Menu.index == TRIGGER) && ((gItemIndexNum[TRIGGER] == 1) || (gItemIndexNum[TRIGGER] == 2)))
-          {
-            if((gItemParam[I_INDEX] & 0x00FF) < gItemParamMax[I_INDEX])
+            else if((Menu.index == TRIGGER) && ((gItemIndexNum[TRIGGER] == 1) || (gItemIndexNum[TRIGGER] == 2)))
             {
-              gItemParam[I_INDEX] = gItemParam[I_INDEX] + gItemParamStep[I_INDEX];
-            }
-          }
-          else
-          {
-            if((gItemParam[I_INDEX] + gItemParamStep[I_INDEX]) < gItemParamMax[I_INDEX])
-            {
-              gItemParam[I_INDEX] = gItemParam[I_INDEX] + gItemParamStep[I_INDEX];
+              if((gItemParam[I_INDEX] & 0x00FF) < gItemParamMax[I_INDEX])
+              {
+                gItemParam[I_INDEX] = gItemParam[I_INDEX] + gItemParamStep[I_INDEX];
+              }
             }
             else
             {
-              gItemParam[I_INDEX] =  gItemParamMax[I_INDEX];
+              if((gItemParam[I_INDEX] + gItemParamStep[I_INDEX]) < gItemParamMax[I_INDEX])
+              {
+                gItemParam[I_INDEX] = gItemParam[I_INDEX] + gItemParamStep[I_INDEX];
+              }
+              else
+              {
+                gItemParam[I_INDEX] =  gItemParamMax[I_INDEX];
+              }
+            }
+            if(Menu.index == OUT_TYPE) PIO_Init(gItemParam[OUTTYPE]);
+            if(Menu.index == IN_TYPE) DefaultTir(gItemParam[INTYPE]);
+          }
+          else if(SubItem.flag)               
+          {
+            if((Menu.index == IN_TYPE) && (gItemIndexNum[IN_TYPE] == 0))
+            {
+              if(INPUT_SUB_PARAM < INPUT_SUB_PARAM_MAX)
+              {
+                INPUT_SUB_PARAM++;
+              }
+            }
+            else if(Menu.index == OUT_TYPE)
+            {
+              if(OUT_SUB_PARAM < OUT_SUB_PARAM_MAX)
+              {
+                OUT_SUB_PARAM++;
+              }
             }
           }
-          if(Menu.index == OUT_TYPE) PIO_Init(gItemParam[OUTTYPE]);
-          if(Menu.index == IN_TYPE) DefaultTir(gItemParam[INTYPE]);
+          break;
         }
-        else if(SubItem.flag)               
+        //          if(gKeyActv != K1_ACTp) Beep_mS(50);
+        if(gKeyActv & 0xF0F0) Beep_mS(50);  // 长按和按下不Beep
+        
+        ShowTopTitle();
+        if(Item.flag && (gKeyActv != K1_ACTn)) ShowPopItem(Menu.index);
+        if(SubItem.flag)                    // 显示子菜单选项
         {
-          if((Menu.index == IN_TYPE) && (gItemIndexNum[IN_TYPE] == 0))
-          {
-            if(INPUT_SUB_PARAM < INPUT_SUB_PARAM_MAX)
-            {
-              INPUT_SUB_PARAM++;
-            }
-          }
-          else if(Menu.index == OUT_TYPE)
-          {
-            if(OUT_SUB_PARAM < OUT_SUB_PARAM_MAX)
-            {
-              OUT_SUB_PARAM++;
-            }
-          }
+          ShowSubItem(Menu.index, gItemIndexNum[Menu.index]);
         }
-        break;
+        HW_Ctrl(Menu.index, gItemIndexNum[Menu.index]);
+        ShowWindowPrecent();
+        if(Menu.index == TIME_SET) ShowTimeBaseStr();
+        ShowTimeMarkValue();
+        ShowMeasureValue();
+        ResetPowerOffTime();
+        gKeyActv = 0;
       }
-      //          if(gKeyActv != K1_ACTp) Beep_mS(50);
-      if(gKeyActv & 0xF0F0) Beep_mS(50);  // 长按和按下不Beep
-      
-      ShowTopTitle();
-      if(Item.flag && (gKeyActv != K1_ACTn)) ShowPopItem(Menu.index);
-      if(SubItem.flag)                    // 显示子菜单选项
-      {
-        ShowSubItem(Menu.index, gItemIndexNum[Menu.index]);
-      }
-      HW_Ctrl(Menu.index, gItemIndexNum[Menu.index]);
-      ShowWindowPrecent();
-      if(Menu.index == TIME_SET) ShowTimeBaseStr();
-      ShowTimeMarkValue();
-      ShowMeasureValue();
-      ResetPowerOffTime();
-      gKeyActv = 0;
-    }
     //===================Test==========================
     if(M_Flag)  //子菜单状态下不刷新FPGA显示
     {
