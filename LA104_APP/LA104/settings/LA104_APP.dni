@@ -1,0 +1,94 @@
+[Stack]
+FillEnabled=0
+OverflowWarningsEnabled=1
+WarningThreshold=90
+SpWarningsEnabled=1
+WarnLogOnly=1
+UseTrigger=1
+TriggerName=main
+LimitSize=0
+ByteLimit=50
+[DebugChecksum]
+Checksum=-935139235
+[Exceptions]
+StopOnUncaught=_ 0
+StopOnThrow=_ 0
+[CallStack]
+ShowArgs=0
+[Disassembly]
+MixedMode=1
+[SWOTraceHWSettings]
+OverrideDefaultClocks=0
+CpuClock=72000000
+ClockAutoDetect=1
+ClockWanted=2000000
+JtagSpeed=2000000
+Prescaler=36
+TimeStampPrescIndex=0
+TimeStampPrescData=0
+PcSampCYCTAP=1
+PcSampPOSTCNT=15
+PcSampIndex=0
+DataLogMode=0
+ITMportsEnable=0
+ITMportsTermIO=0
+ITMportsLogFile=0
+ITMlogFile=$PROJ_DIR$\ITM.log
+[DataLog]
+LogEnabled=0
+SumEnabled=0
+GraphEnabled=0
+ShowTimeLog=1
+ShowTimeSum=1
+[InterruptLog]
+LogEnabled=0
+SumEnabled=0
+GraphEnabled=0
+ShowTimeLog=1
+ShowTimeSum=1
+SumSortOrder=0
+[Log file]
+LoggingEnabled=_ 0
+LogFile=_ ""
+Category=_ 0
+[TermIOLog]
+LoggingEnabled=_ 0
+LogFile=_ ""
+[Trace2]
+Enabled=0
+ShowSource=0
+[SWOTraceWindow]
+PcSampling=0
+InterruptLogs=0
+ForcedTimeStamps=0
+EventCPI=0
+EventEXC=0
+EventFOLD=0
+EventLSU=0
+EventSLEEP=0
+[CallStackLog]
+Enabled=0
+[DriverProfiling]
+Enabled=0
+Mode=3
+Graph=0
+Symbiont=0
+Exclusions=
+[Disassemble mode]
+mode=2
+[Breakpoints2]
+Bp0=_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\..\..\..\DEV\LA104\LA104_APP\LA104\SRC\Main.c}.42.9" 0 0 1 "" 0 "" 0
+Count=1
+[Aliases]
+A0=_ "D:\Project\OSC\DFU\DS211\DS211.DFU.V3.60D(HW1.6)\DS211\Src\Ident.c" ""
+A1=_ "E:\Orange\Project\LA104\APP\HW1.2\LA104_APP_Beat_V1_00\LA104\Src\Main.c" ""
+A2=_ "E:\Orange\Project\LA104\APP\HW1.2\LA104_APP_Beat_V1_00\Libraries\STM32_USB-FS-Device_Driver\src\usb_core.c" ""
+A3=_ "E:\Orange\Project\LA104\APP\HW1.2\LA104_HW1_2_APP_0032\LA104\Src\Main.c" ""
+A4=_ "E:\Orange\Project\LA104\APP\HW1.2\LA104_HW1_2_APP_0032\Libraries\STM32_USB-FS-Device_Driver\src\usb_core.c" ""
+A5=_ "E:\Orange\Project\LA104\APP\LA104.APP.HW1.1_074\LA104\Src\Analyze.c" ""
+A6=_ "E:\Orange\Project\LA104\APP\LA104.APP.HW1.1_074\LA104\Src\Main.c" ""
+A7=_ "E:\Orange\Project\LA104\APP\LA104.APP.HW1.1_106\Libraries\STM32_USB-FS-Device_Driver\src\usb_core.c" ""
+A8=_ "E:\Orange\Project\LA104\APP\LA104_APP_Beat_V1_01\LA104\Src\Main.c" ""
+A9=_ "E:\Orange\Project\LA104\APP\LA104_APP_Beat_V1_01\Libraries\STM32_USB-FS-Device_Driver\src\usb_core.c" ""
+Count=10
+SuppressDialog=0

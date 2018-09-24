@@ -1,0 +1,26 @@
+Cable connection
+================
+St Link V2 <-> USB port on LA104
+5.0V <-> Vcc (Red)
+SWCLK <-> D- (white)
+SWDIO <-> D+ (Green)
+GND <-> GND (Black)
+
+
+Debug
+=====
+
+Flash application over USB as normal:
+* Connect USB cable from LA104 to regular USB port.
+* Press SMPL while powering on and upload .hex file.
+
+Connect USB cable from LA104 to St Link debugger and power on.
+
+Start IAR 6.4 and load the project.
+* Select: Project -> Debug without dowloading.
+* Press "Go"
+* Power cycle device.
+* Press "Break" the delect "Yes" to reset.
+* Set/update beakpoints (eg "disable all" then "enable all")
+* Press "Go"
+* Debug!
