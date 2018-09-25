@@ -39,13 +39,13 @@ void main(void)
   
   while(1)
   {
-    ShutdownTest();                          // 软关机测试
-    ShortcutBMP();                           // K1和K4快捷截图
+    ShutdownTest();                            // 软关机测试
+    ShortcutBMP();                             // K1和K4快捷截图
     u8 skip =0;
-  // If we are on the main menu bar
-  // Call the code to handle the ALT functions of the wheels on 
+    // If we are on the main menu bar
+    // Call the code to handle the ALT functions of the wheels on 
     if(Menu.flag)
-      skip=KeyQuickAct();              // T1，T2，水平位移快捷操作
+      skip=KeyQuickAct();                       //Wheel Alt function handler
     if(skip==0)
       if(gKeyActv)
       {
@@ -584,7 +584,7 @@ void Hardware_Init(void)
   SysTick_Config(SystemCoreClock / 1000);
   __Bios(BUZZDEV, INIT);        // 蜂鸣器初始化设置 如果不初始化SI2302会发烫
   __Bios(BUZZDEV, 50);
-  Beep_mS(200);
+  Beep_mS(100);
   __Bios(FLSHDEV, INIT);        // SPI磁盘初始化设置
   __Bios(USBDEV, INIT);         // USB初始化
   DiskConfig();                 // 文件系统初始化
@@ -605,10 +605,12 @@ void Show_Startup_Info(void)
   Disp_Str8x14(0,      70, BLK, BLK, PRN, "                                        ");
   Disp_Str8x14(8,      90, WHT, BLK, PRN, "       Logic Analyzer APP");
   Disp_Str8x14(27 * 8, 90, WHT, BLK, PRN,                           APP_VERSION);
-  Disp_Str8x14(10*8,      70, WHT, BLK, PRN, "Boot: ");
+  Disp_Str8x14(8*8,      70, WHT, BLK, PRN, "Boot: ");
   for(u8 i =0;i<10;i++){
-    Disp_Str8x14(10*8+8*6 + (i*8),70,WHT,BLK,PRN,".");
+    Disp_Str8x14(8*8+8*6 + (i*8),70,WHT,BLK,PRN,".");
     Delay_mS(50);
+    if(__Bios(FPGADEV, DONE) ==1) // early exit on startup
+      return;
   }
   if(__Bios(FPGADEV, DONE) == 0) while(1){}       // FPGA程序出错时不进入APP /* Prevent main app running if FPGA fails*/
   
