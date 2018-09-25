@@ -46,14 +46,14 @@ void TriConfig(void)
 {
   u16 PulseWidth = 0;
   
-  FPGA_ReadWrite(TRG_COND, 1, gItemParam[TRICOND] >> 8);
+  FPGA_ReadWrite(TRG_COND, 1, gItemParam[TRICOND] >> 8); // Save to FPGA the trigger style (edge, pulse etc)
   Delay_mS(1);
-  FPGA_ReadWrite(MEM_MASK, 1, gItemParam[TRIMASK] >> 8);
+  FPGA_ReadWrite(MEM_MASK, 1, gItemParam[TRIMASK] >> 8); // Set the mask for channels
   Delay_mS(1);
-  PulseWidth = (u16)(gItemParam[TRIWIDTH] * gTB_Scale[gItemParam[TIMEBASE]]);
-  FPGA_ReadWrite(MEM_TWTH, 2, PulseWidth);
+  PulseWidth = (u16)(gItemParam[TRIWIDTH] * gTB_Scale[gItemParam[TIMEBASE]]); // Convert the pulse width (counts * width in uS per count)
+  FPGA_ReadWrite(MEM_TWTH, 2, PulseWidth); // Set in the FPGA the pulse width
   Delay_mS(1);
-  FPGA_ReadWrite(TRG_KIND, 1, gItemParam[TRITYPE]);
+  FPGA_ReadWrite(TRG_KIND, 1, gItemParam[TRITYPE]); // Save the type (all match, width less than etc. First line of the menu)
   Delay_mS(1);
 }
 
@@ -95,7 +95,7 @@ void DefaultTir(u8 Type)
 
 /*******************************************************************************
 * FunctionName : Process
-* Description  : 数据处理
+* Description  : 数据处理 Main process / capture process
 * Param        : void 
 *******************************************************************************/
 void Process(void)
@@ -107,11 +107,11 @@ void Process(void)
   u8  SamplFlag = 0;
   u32 SamplData = 0;
   
-  gTimeBase = gItemParam[TIMEBASE];                   // 保存采样时的时基
-  memset(gSamplBuf, 0, RECORD_DEPTH * CNTx4K);        // 清除采样缓冲区数据
-  TriConfig();                                        // 采样设置
+  gTimeBase = gItemParam[TIMEBASE];                   // 保存采样时的时基 - Get current timebase sampling period
+  memset(gSamplBuf, 0, RECORD_DEPTH * CNTx4K);        // 清除采样缓冲区数据 - clear sample buffer
+  TriConfig();                                        // 采样设置 - apply trigger sampling settings to the FPGA
   
-  FPGA_ReadWrite(SMPL_CLR, 1, 0);                     // 采样清零
+  FPGA_ReadWrite(SMPL_CLR, 1, 0);                     // 采样清零 - clear sampling memory in fpga
   Delay_mS(2);
   gFullmS = 1000;                                     // 等待采样时间
   //  防止按键保存之前的状态，后期需要调整
@@ -128,7 +128,7 @@ void Process(void)
       break;
     }
     if (gKeyActv & K4_ACTp)                          // 按键强制退出采样
-    {
+    { // If the user presses K4 send out some test data 
       Beep_mS(50);
       gKeyActv = 0;
       PIO_SendData(gItemParam[OUTTYPE]);
@@ -174,7 +174,7 @@ void Process(void)
         memset(&gSamplBuf[CNTx4K * i], Buf[0], 1);
         if (gKeyActv & K1_ACTp)                      // 按键暂停时强制退出采样
         {
-          gBeepFlag = 1;
+          gBeepFlag = 1; // If the user presses the sample button again, exit early
           break;
         }
         if (gFullmS == 0)                            // 超过采样时间强制退出采样
@@ -973,6 +973,7 @@ u8 KeyQuickAct(void)
   * K3 will let A adjust X pos and B adjust time base
   * and K4 will adjust the two time markers T1 / T2
   */
+  u8 brk =0;
   if((READ_KEY == K3_HOLD))
   {  
     if ((gKeyActv & ENCD_1n)){
@@ -1006,7 +1007,7 @@ u8 KeyQuickAct(void)
   
   if ((READ_KEY == K4_HOLD) && (gKeyActv & ENCD_2p))
   {
-    while (READ_KEY == K4_HOLD)
+    while (READ_KEY == K4_HOLD && brk==0)
     {
       if (gItemIndexNum[TIME_SET] == TB_T1)
       {
@@ -1016,6 +1017,7 @@ u8 KeyQuickAct(void)
         } else
         {
           gItemParam[T1POSI] =  gItemParam[T2POSI];
+          brk=1;
         }
       } else if (gItemIndexNum[TIME_SET] == TB_T2)
       {
@@ -1024,6 +1026,8 @@ u8 KeyQuickAct(void)
           gItemParam[TIMEBASE + gItemIndexNum[TIME_SET]] =
             gItemParam[TIMEBASE + gItemIndexNum[TIME_SET]] + gItemParamStep[TIMEBASE + gItemIndexNum[TIME_SET]];
         }
+        else
+          brk=1;
       } else if (gItemIndexNum[TIME_SET] == TB_X)
       {
         gXposiAdd = 1;
@@ -1042,7 +1046,7 @@ u8 KeyQuickAct(void)
     return 1;
   } else if ((READ_KEY == K4_HOLD) && (gKeyActv & ENCD_2n))
   {
-    while (READ_KEY == K4_HOLD)
+    while (READ_KEY == K4_HOLD && brk==0)
     {
       if (gItemIndexNum[TIME_SET] == TB_T2)
       {
@@ -1052,6 +1056,7 @@ u8 KeyQuickAct(void)
         } else
         {
           gItemParam[T2POSI] = gItemParam[T1POSI];
+          brk=1;
         }
       } else if (gItemIndexNum[TIME_SET] == TB_T1)
       {
@@ -1059,6 +1064,9 @@ u8 KeyQuickAct(void)
         {
           gItemParam[TIMEBASE + gItemIndexNum[TIME_SET]] =
             gItemParam[TIMEBASE + gItemIndexNum[TIME_SET]] - gItemParamStep[TIMEBASE + gItemIndexNum[TIME_SET]];
+        }
+        else {
+          brk=1;
         }
       } else if (gItemIndexNum[TIME_SET] == TB_X)
       {

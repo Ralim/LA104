@@ -51,13 +51,13 @@ void main(void)
       {
         switch(gKeyActv)
         {
-        case K1_ACTp:
+        case K1_ACTp:// Start capture button 
           gKeyActv = 0;
           {
             Menu.flag = 1;
             Item.flag = 0;
             SubItem.flag = 0;
-            Process();
+            Process();// Run the sampler engine until a trigger is found 
             ShowSmplStatus(STOP);
             if(gBeepFlag)
             {

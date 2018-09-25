@@ -35,7 +35,7 @@ uc8  Switch_Str[][7] = { "  OFF ", "  ON  " };
 uc8  InputTypeStr[][5] = { "User", "SPI ", "I2C ", "UART", "USB ", "CAN ", "DMX ", "SWD " };
 uc8  TimeStr[][3] = { "TB", "T1", "T2", " X", "T0", "ZC" };
 uc8  OutputTypeStr[][5] = { " PWM", " SPI", " I2C", "UART", };
-uc8  DateFormatStr[][7] = { "Ascii ", " DEC  ", " HEX  ", " BIN  ", };
+uc8  DateFormatStr[][7] = { "ASCII ", " DEC  ", " HEX  ", " BIN  ", };
 uc8  StopBitsStr[][7] = { "  0.0 ", "  1.0 ", "  1.5 ", "  2.0 " };
 uc8  ParityTypeStr[][7] = { " None ", "  Odd ", " Even " };
 uc8  BaudRateStr[][7] = { " 4800 ", " 9600 ", " 14400", " 19200", " 38400", " 56000",
@@ -94,13 +94,13 @@ uc32  gTB_Scale[20] =
 uc8  TriTypeStr[][8] = {  
   /* Trigger Types*/
   "  None ", //
-  " NE_CM ", //
-  " EQ_CM ", //
-  "   Any ", //
+  " NE_CM ", // != The edge ?
+  " EQ_CM ", // Equals Edge
+  "   Any ", // ANy Change
   " LNE_W ", //
   " LEQ_W ", //
   " GNE_W ", //
-  " GEQ_W ", //
+  " GEQ_W ", // = PulseWidth
 };
 uc8  TriCondStr[][4] = {  "Non", " ^`", " ==", "Any", " ^`", " ==", " ^`", " ==", };
 uc8  ProtocolStr[][6] =
@@ -142,7 +142,7 @@ uc8  UART_SetStr[][16] = {
 };
 
 uc8  TimeSetStr[][13] = {
-    "TimeBase: ", "T1.Pos :  ", "T2.Pos :  ", "X .Pos :  ", "T0.Pos :  ", "ZC.Pos :  ",
+    "TimeBase: ", "T1.Pos  : ", "T2.Pos  : ", "X .Pos  : ", "T0.Pos  : ", "ZC.Pos :  ",
 };
 uc8  TriggerStr[][13] = {
     "TriType : ", "TriEdge : ", "TrgEn   : ", "TrgWidth: ", "LogicThr: ", /*"Threshold:",*/
@@ -162,7 +162,7 @@ uc8  FileSysStr[][13] = {
     "SaveBmp:  ", "SaveCsv:  ", "SaveSvg:  ", "SaveBuf:  ",
 };
 uc8  SettingStr[][13] = {
-    "Save:     ", "Restore:  ", "Volume:   ", "BKlight:  ", "Standby:  ", "PowerOff: ",
+    "Save    : ", "Restore : ", "Volume  : ", "BKlight : ", "Standby : ", "PowerOff: ",
 };
 
 //The number of items (sub menus / lines) in each menu -1 (max value)
