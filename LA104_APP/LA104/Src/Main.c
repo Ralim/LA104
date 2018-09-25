@@ -538,7 +538,7 @@ void main(void)
           break;
         }
         //          if(gKeyActv != K1_ACTp) Beep_mS(50);
-        if(gKeyActv & 0xF0F0) Beep_mS(50);  // 长按和按下不Beep
+        if(gKeyActv & 0xF0F0) Beep_mS(50);  // Been on button release or wheel move 
         
         ShowTopTitle();
         if(Item.flag && (gKeyActv != K1_ACTn)) ShowPopItem(Menu.index);

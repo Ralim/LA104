@@ -969,24 +969,32 @@ void PIO_Init(u8 Type)
 u8 KeyQuickAct(void)
 {
   /*
-  * Handle holding K3 or K4 and using the up down scroll wheel
-  * This is used with K4 being an auto-repeat
-  * and K3 being used to always move X. Pos
+  * Handle holding K3 or K4 and using the wheels
+  * K3 will let A adjust X pos and B adjust time base
+  * and K4 will adjust the two time markers T1 / T2
   */
   if((READ_KEY == K3_HOLD))
   {  
-    if ((gKeyActv & ENCD_1n))
-    {
+    if ((gKeyActv & ENCD_1n)){
       gXposiDec = 1;     
-    }else if ((gKeyActv & ENCD_1p))
-    {
+    }else if ((gKeyActv & ENCD_1p)){
       gXposiAdd = 1;     
-    } else 
+    } else if ((gKeyActv & ENCD_2p)){
+      if(gItemParam[TIMEBASE+TB_TB] < gItemParamMax[TIMEBASE+TB_TB])
+      {
+        gItemParam[TIMEBASE+TB_TB] += (u16)(gItemParamStep[TIMEBASE+TB_TB]);
+      }  
+    } else if ((gKeyActv & ENCD_2n)){
+      if(gItemParam[TIMEBASE+TB_TB] > gItemParamMin[TIMEBASE+TB_TB])
+      {
+        gItemParam[TIMEBASE+TB_TB] -= (u16)(gItemParamStep[TIMEBASE+TB_TB]);
+      }  
+    } 
+    else 
       return 1;
     
     ZC_Scale();
-    ShowWindowPrecent();
-    
+    ShowWindowPrecent();    
     memcpy(gLCD_Buf, gLCD_Backup, LCD_BUF_WIDTH);
     ShowWaveToLCD();
     ShowTimeMarkValue();
