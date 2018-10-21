@@ -113,7 +113,7 @@ void Process(void)
   
   FPGA_ReadWrite(SMPL_CLR, 1, 0);                     // 采样清零 - clear sampling memory in fpga
   Delay_mS(2);
-  gFullmS = 1000;                                     // 等待采样时间
+  gFullmS = 1000;                                     // 等待采样时间 
   //  防止按键保存之前的状态，后期需要调整
   //  Delay_mS(500);
   do                                                  // 等待满足触发条件

@@ -94,13 +94,13 @@ uc32  gTB_Scale[20] =
 uc8  TriTypeStr[][8] = {  
   /* Trigger Types*/
   "  None ", //
-  " NE_CM ", // != The edge ?
-  " EQ_CM ", // Equals Edge
-  "   Any ", // ANy Change
-  " LNE_W ", //
-  " LEQ_W ", //
-  " GNE_W ", //
-  " GEQ_W ", // = PulseWidth
+  " NE_CM ", // Not Equal to the combination setup 
+  " EQ_CM ", // Equal to the combination setup
+  "   Any ", // ARbitary trigger
+  " LNE_W ", // Not equal to continious pulse width less than value trigger Pulse width is
+  " LEQ_W ", // equal to continious pulse width less than value trigger (Pulse Width is <= set value)
+  " GNE_W ", // incompadable to pulse width larger than pulse length
+  " GEQ_W ", // compadable to pulse width larger than pulse length (Pulse width is larger than set value)
 };
 uc8  TriCondStr[][4] = {  "Non", " ^`", " ==", "Any", " ^`", " ==", " ^`", " ==", };
 uc8  ProtocolStr[][6] =
